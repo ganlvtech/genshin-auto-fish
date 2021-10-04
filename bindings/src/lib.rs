@@ -1,14 +1,4 @@
 #[allow(
-unused_variables,
-non_upper_case_globals,
-non_snake_case,
-unused_unsafe,
-non_camel_case_types,
-dead_code,
-clippy::all
-)]
-pub mod Windows {
-    #[allow(
     unused_variables,
     non_upper_case_globals,
     non_snake_case,
@@ -16,9 +6,9 @@ pub mod Windows {
     non_camel_case_types,
     dead_code,
     clippy::all
-    )]
-    pub mod Win32 {
-        #[allow(
+)]
+pub mod Windows {
+    #[allow(
         unused_variables,
         non_upper_case_globals,
         non_snake_case,
@@ -26,16 +16,26 @@ pub mod Windows {
         non_camel_case_types,
         dead_code,
         clippy::all
+    )]
+    pub mod Win32 {
+        #[allow(
+            unused_variables,
+            non_upper_case_globals,
+            non_snake_case,
+            unused_unsafe,
+            non_camel_case_types,
+            dead_code,
+            clippy::all
         )]
         pub mod Foundation {
             #[repr(transparent)]
             #[derive(
-            :: std :: default :: Default,
-            :: std :: clone :: Clone,
-            :: std :: marker :: Copy,
-            :: std :: cmp :: PartialEq,
-            :: std :: cmp :: Eq,
-            :: std :: fmt :: Debug,
+                :: std :: default :: Default,
+                :: std :: clone :: Clone,
+                :: std :: marker :: Copy,
+                :: std :: cmp :: PartialEq,
+                :: std :: cmp :: Eq,
+                :: std :: fmt :: Debug,
             )]
             pub struct BOOL(pub i32);
             unsafe impl ::windows::Abi for BOOL {
@@ -116,11 +116,11 @@ pub mod Windows {
                 }
             }
             #[derive(
-            :: std :: clone :: Clone,
-            :: std :: marker :: Copy,
-            :: std :: fmt :: Debug,
-            :: std :: cmp :: PartialEq,
-            :: std :: cmp :: Eq,
+                :: std :: clone :: Clone,
+                :: std :: marker :: Copy,
+                :: std :: fmt :: Debug,
+                :: std :: cmp :: PartialEq,
+                :: std :: cmp :: Eq,
             )]
             #[repr(transparent)]
             pub struct HWND(pub isize);
@@ -134,18 +134,116 @@ pub mod Windows {
                 type Abi = Self;
                 type DefaultType = Self;
             }
+            #[derive(
+                :: std :: clone :: Clone,
+                :: std :: marker :: Copy,
+                :: std :: fmt :: Debug,
+                :: std :: cmp :: PartialEq,
+                :: std :: cmp :: Eq,
+            )]
+            #[repr(transparent)]
+            pub struct PWSTR(pub *mut u16);
+            impl ::std::default::Default for PWSTR {
+                fn default() -> Self {
+                    Self(::std::ptr::null_mut())
+                }
+            }
+            unsafe impl ::windows::Abi for PWSTR {
+                type Abi = Self;
+                type DefaultType = Self;
+                unsafe fn drop_param(param: &mut ::windows::Param<'_, Self>) {
+                    if let ::windows::Param::Boxed(value) = param {
+                        if !value.0.is_null() {
+                            unsafe {
+                                ::std::boxed::Box::from_raw(value.0);
+                            }
+                        }
+                    }
+                }
+            }
+            impl<'a> ::windows::IntoParam<'a, PWSTR> for &str {
+                fn into_param(self) -> ::windows::Param<'a, PWSTR> {
+                    ::windows::Param::Boxed(PWSTR(::std::boxed::Box::<[u16]>::into_raw(
+                        self.encode_utf16()
+                            .chain(::std::iter::once(0))
+                            .collect::<std::vec::Vec<u16>>()
+                            .into_boxed_slice(),
+                    ) as _))
+                }
+            }
+            impl<'a> ::windows::IntoParam<'a, PWSTR> for String {
+                fn into_param(self) -> ::windows::Param<'a, PWSTR> {
+                    ::windows::Param::Boxed(PWSTR(::std::boxed::Box::<[u16]>::into_raw(
+                        self.encode_utf16()
+                            .chain(::std::iter::once(0))
+                            .collect::<std::vec::Vec<u16>>()
+                            .into_boxed_slice(),
+                    ) as _))
+                }
+            }
+            #[cfg(windows)]
+            impl<'a> ::windows::IntoParam<'a, PWSTR> for &::std::ffi::OsStr {
+                fn into_param(self) -> ::windows::Param<'a, PWSTR> {
+                    use std::os::windows::ffi::OsStrExt;
+                    ::windows::Param::Boxed(PWSTR(::std::boxed::Box::<[u16]>::into_raw(
+                        self.encode_wide()
+                            .chain(::std::iter::once(0))
+                            .collect::<std::vec::Vec<u16>>()
+                            .into_boxed_slice(),
+                    ) as _))
+                }
+            }
+            #[cfg(windows)]
+            impl<'a> ::windows::IntoParam<'a, PWSTR> for ::std::ffi::OsString {
+                fn into_param(self) -> ::windows::Param<'a, PWSTR> {
+                    use std::os::windows::ffi::OsStrExt;
+                    ::windows::Param::Boxed(PWSTR(::std::boxed::Box::<[u16]>::into_raw(
+                        self.encode_wide()
+                            .chain(::std::iter::once(0))
+                            .collect::<std::vec::Vec<u16>>()
+                            .into_boxed_slice(),
+                    ) as _))
+                }
+            }
+            #[derive(:: std :: clone :: Clone, :: std :: marker :: Copy)]
+            #[repr(C)]
+            pub struct RECT {
+                pub left: i32,
+                pub top: i32,
+                pub right: i32,
+                pub bottom: i32,
+            }
+            impl RECT {}
+            impl ::std::default::Default for RECT {
+                fn default() -> Self {
+                    unsafe { ::std::mem::zeroed() }
+                }
+            }
+            impl ::std::fmt::Debug for RECT {
+                fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    fmt.debug_struct("RECT")
+                        .field("left", &self.left)
+                        .field("top", &self.top)
+                        .field("right", &self.right)
+                        .field("bottom", &self.bottom)
+                        .finish()
+                }
+            }
+            impl ::std::cmp::PartialEq for RECT {
+                fn eq(&self, other: &Self) -> bool {
+                    self.left == other.left
+                        && self.top == other.top
+                        && self.right == other.right
+                        && self.bottom == other.bottom
+                }
+            }
+            impl ::std::cmp::Eq for RECT {}
+            unsafe impl ::windows::Abi for RECT {
+                type Abi = Self;
+                type DefaultType = Self;
+            }
         }
         #[allow(
-        unused_variables,
-        non_upper_case_globals,
-        non_snake_case,
-        unused_unsafe,
-        non_camel_case_types,
-        dead_code,
-        clippy::all
-        )]
-        pub mod Graphics {
-            #[allow(
             unused_variables,
             non_upper_case_globals,
             non_snake_case,
@@ -153,6 +251,16 @@ pub mod Windows {
             non_camel_case_types,
             dead_code,
             clippy::all
+        )]
+        pub mod Graphics {
+            #[allow(
+                unused_variables,
+                non_upper_case_globals,
+                non_snake_case,
+                unused_unsafe,
+                non_camel_case_types,
+                dead_code,
+                clippy::all
             )]
             pub mod Gdi {
                 #[derive(:: std :: clone :: Clone, :: std :: marker :: Copy)]
@@ -244,108 +352,13 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 pub const BI_RGB: i32 = 0i32;
-                pub unsafe fn BitBlt<'a>(
-                    hdc: impl ::windows::IntoParam<'a, HDC>,
-                    x: i32,
-                    y: i32,
-                    cx: i32,
-                    cy: i32,
-                    hdcsrc: impl ::windows::IntoParam<'a, HDC>,
-                    x1: i32,
-                    y1: i32,
-                    rop: ROP_CODE,
-                ) -> super::super::Foundation::BOOL {
-                    #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn BitBlt(
-                                    hdc: HDC,
-                                    x: i32,
-                                    y: i32,
-                                    cx: i32,
-                                    cy: i32,
-                                    hdcsrc: HDC,
-                                    x1: i32,
-                                    y1: i32,
-                                    rop: ROP_CODE,
-                                ) -> super::super::Foundation::BOOL;
-                            }
-                            ::std::mem::transmute(BitBlt(
-                                hdc.into_param().abi(),
-                                ::std::mem::transmute(x),
-                                ::std::mem::transmute(y),
-                                ::std::mem::transmute(cx),
-                                ::std::mem::transmute(cy),
-                                hdcsrc.into_param().abi(),
-                                ::std::mem::transmute(x1),
-                                ::std::mem::transmute(y1),
-                                ::std::mem::transmute(rop),
-                            ))
-                        }
-                    #[cfg(not(windows))]
-                    unimplemented!("Unsupported target OS");
-                }
-                pub unsafe fn CreateCompatibleBitmap<'a>(
-                    hdc: impl ::windows::IntoParam<'a, HDC>,
-                    cx: i32,
-                    cy: i32,
-                ) -> HBITMAP {
-                    #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn CreateCompatibleBitmap(hdc: HDC, cx: i32, cy: i32) -> HBITMAP;
-                            }
-                            ::std::mem::transmute(CreateCompatibleBitmap(
-                                hdc.into_param().abi(),
-                                ::std::mem::transmute(cx),
-                                ::std::mem::transmute(cy),
-                            ))
-                        }
-                    #[cfg(not(windows))]
-                    unimplemented!("Unsupported target OS");
-                }
-                pub unsafe fn CreateCompatibleDC<'a>(
-                    hdc: impl ::windows::IntoParam<'a, HDC>,
-                ) -> CreatedHDC {
-                    #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn CreateCompatibleDC(hdc: HDC) -> CreatedHDC;
-                            }
-                            ::std::mem::transmute(CreateCompatibleDC(hdc.into_param().abi()))
-                        }
-                    #[cfg(not(windows))]
-                    unimplemented!("Unsupported target OS");
-                }
                 #[derive(
-                :: std :: clone :: Clone,
-                :: std :: marker :: Copy,
-                :: std :: fmt :: Debug,
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                )]
-                #[repr(transparent)]
-                pub struct CreatedHDC(pub isize);
-                impl ::std::default::Default for CreatedHDC {
-                    fn default() -> Self {
-                        unsafe { ::std::mem::zeroed() }
-                    }
-                }
-                unsafe impl ::windows::Handle for CreatedHDC {}
-                unsafe impl ::windows::Abi for CreatedHDC {
-                    type Abi = Self;
-                    type DefaultType = Self;
-                }
-                #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
                 )]
                 #[repr(transparent)]
                 pub struct DIB_USAGE(pub u32);
@@ -388,31 +401,21 @@ pub mod Windows {
                         Self(self.0.not())
                     }
                 }
-                pub unsafe fn DeleteDC<'a>(
-                    hdc: impl ::windows::IntoParam<'a, CreatedHDC>,
-                ) -> super::super::Foundation::BOOL {
+                pub unsafe fn GetCurrentObject<'a>(
+                    hdc: impl ::windows::IntoParam<'a, HDC>,
+                    r#type: OBJ_TYPE,
+                ) -> HGDIOBJ {
                     #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn DeleteDC(hdc: CreatedHDC) -> super::super::Foundation::BOOL;
-                            }
-                            ::std::mem::transmute(DeleteDC(hdc.into_param().abi()))
+                    {
+                        #[link(name = "gdi32")]
+                        extern "system" {
+                            fn GetCurrentObject(hdc: HDC, r#type: OBJ_TYPE) -> HGDIOBJ;
                         }
-                    #[cfg(not(windows))]
-                    unimplemented!("Unsupported target OS");
-                }
-                pub unsafe fn DeleteObject<'a>(
-                    ho: impl ::windows::IntoParam<'a, HGDIOBJ>,
-                ) -> super::super::Foundation::BOOL {
-                    #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn DeleteObject(ho: HGDIOBJ) -> super::super::Foundation::BOOL;
-                            }
-                            ::std::mem::transmute(DeleteObject(ho.into_param().abi()))
-                        }
+                        ::std::mem::transmute(GetCurrentObject(
+                            hdc.into_param().abi(),
+                            ::std::mem::transmute(r#type),
+                        ))
+                    }
                     #[cfg(not(windows))]
                     unimplemented!("Unsupported target OS");
                 }
@@ -420,13 +423,13 @@ pub mod Windows {
                     hwnd: impl ::windows::IntoParam<'a, super::super::Foundation::HWND>,
                 ) -> HDC {
                     #[cfg(windows)]
-                        {
-                            #[link(name = "user32")]
-                            extern "system" {
-                                fn GetDC(hwnd: super::super::Foundation::HWND) -> HDC;
-                            }
-                            ::std::mem::transmute(GetDC(hwnd.into_param().abi()))
+                    {
+                        #[link(name = "user32")]
+                        extern "system" {
+                            fn GetDC(hwnd: super::super::Foundation::HWND) -> HDC;
                         }
+                        ::std::mem::transmute(GetDC(hwnd.into_param().abi()))
+                    }
                     #[cfg(not(windows))]
                     unimplemented!("Unsupported target OS");
                 }
@@ -440,38 +443,38 @@ pub mod Windows {
                     usage: DIB_USAGE,
                 ) -> i32 {
                     #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn GetDIBits(
-                                    hdc: HDC,
-                                    hbm: HBITMAP,
-                                    start: u32,
-                                    clines: u32,
-                                    lpvbits: *mut ::std::ffi::c_void,
-                                    lpbmi: *mut BITMAPINFO,
-                                    usage: DIB_USAGE,
-                                ) -> i32;
-                            }
-                            ::std::mem::transmute(GetDIBits(
-                                hdc.into_param().abi(),
-                                hbm.into_param().abi(),
-                                ::std::mem::transmute(start),
-                                ::std::mem::transmute(clines),
-                                ::std::mem::transmute(lpvbits),
-                                ::std::mem::transmute(lpbmi),
-                                ::std::mem::transmute(usage),
-                            ))
+                    {
+                        #[link(name = "gdi32")]
+                        extern "system" {
+                            fn GetDIBits(
+                                hdc: HDC,
+                                hbm: HBITMAP,
+                                start: u32,
+                                clines: u32,
+                                lpvbits: *mut ::std::ffi::c_void,
+                                lpbmi: *mut BITMAPINFO,
+                                usage: DIB_USAGE,
+                            ) -> i32;
                         }
+                        ::std::mem::transmute(GetDIBits(
+                            hdc.into_param().abi(),
+                            hbm.into_param().abi(),
+                            ::std::mem::transmute(start),
+                            ::std::mem::transmute(clines),
+                            ::std::mem::transmute(lpvbits),
+                            ::std::mem::transmute(lpbmi),
+                            ::std::mem::transmute(usage),
+                        ))
+                    }
                     #[cfg(not(windows))]
                     unimplemented!("Unsupported target OS");
                 }
                 #[derive(
-                :: std :: clone :: Clone,
-                :: std :: marker :: Copy,
-                :: std :: fmt :: Debug,
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
+                    :: std :: clone :: Clone,
+                    :: std :: marker :: Copy,
+                    :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
                 )]
                 #[repr(transparent)]
                 pub struct HBITMAP(pub isize);
@@ -486,11 +489,11 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 #[derive(
-                :: std :: clone :: Clone,
-                :: std :: marker :: Copy,
-                :: std :: fmt :: Debug,
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
+                    :: std :: clone :: Clone,
+                    :: std :: marker :: Copy,
+                    :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
                 )]
                 #[repr(transparent)]
                 pub struct HDC(pub isize);
@@ -505,11 +508,11 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 #[derive(
-                :: std :: clone :: Clone,
-                :: std :: marker :: Copy,
-                :: std :: fmt :: Debug,
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
+                    :: std :: clone :: Clone,
+                    :: std :: marker :: Copy,
+                    :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
                 )]
                 #[repr(transparent)]
                 pub struct HGDIOBJ(pub isize);
@@ -520,6 +523,39 @@ pub mod Windows {
                 }
                 unsafe impl ::windows::Handle for HGDIOBJ {}
                 unsafe impl ::windows::Abi for HGDIOBJ {
+                    type Abi = Self;
+                    type DefaultType = Self;
+                }
+                #[derive(
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
+                )]
+                #[repr(transparent)]
+                pub struct OBJ_TYPE(pub i32);
+                pub const OBJ_PEN: OBJ_TYPE = OBJ_TYPE(1i32);
+                pub const OBJ_BRUSH: OBJ_TYPE = OBJ_TYPE(2i32);
+                pub const OBJ_DC: OBJ_TYPE = OBJ_TYPE(3i32);
+                pub const OBJ_METADC: OBJ_TYPE = OBJ_TYPE(4i32);
+                pub const OBJ_PAL: OBJ_TYPE = OBJ_TYPE(5i32);
+                pub const OBJ_FONT: OBJ_TYPE = OBJ_TYPE(6i32);
+                pub const OBJ_BITMAP: OBJ_TYPE = OBJ_TYPE(7i32);
+                pub const OBJ_REGION: OBJ_TYPE = OBJ_TYPE(8i32);
+                pub const OBJ_METAFILE: OBJ_TYPE = OBJ_TYPE(9i32);
+                pub const OBJ_MEMDC: OBJ_TYPE = OBJ_TYPE(10i32);
+                pub const OBJ_EXTPEN: OBJ_TYPE = OBJ_TYPE(11i32);
+                pub const OBJ_ENHMETADC: OBJ_TYPE = OBJ_TYPE(12i32);
+                pub const OBJ_ENHMETAFILE: OBJ_TYPE = OBJ_TYPE(13i32);
+                pub const OBJ_COLORSPACE: OBJ_TYPE = OBJ_TYPE(14i32);
+                impl ::std::convert::From<i32> for OBJ_TYPE {
+                    fn from(value: i32) -> Self {
+                        Self(value)
+                    }
+                }
+                unsafe impl ::windows::Abi for OBJ_TYPE {
                     type Abi = Self;
                     type DefaultType = Self;
                 }
@@ -560,119 +596,27 @@ pub mod Windows {
                     type Abi = Self;
                     type DefaultType = Self;
                 }
-                #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
-                )]
-                #[repr(transparent)]
-                pub struct ROP_CODE(pub u32);
-                pub const SRCCOPY: ROP_CODE = ROP_CODE(13369376u32);
-                pub const SRCPAINT: ROP_CODE = ROP_CODE(15597702u32);
-                pub const SRCAND: ROP_CODE = ROP_CODE(8913094u32);
-                pub const SRCINVERT: ROP_CODE = ROP_CODE(6684742u32);
-                pub const SRCERASE: ROP_CODE = ROP_CODE(4457256u32);
-                pub const NOTSRCCOPY: ROP_CODE = ROP_CODE(3342344u32);
-                pub const NOTSRCERASE: ROP_CODE = ROP_CODE(1114278u32);
-                pub const MERGECOPY: ROP_CODE = ROP_CODE(12583114u32);
-                pub const MERGEPAINT: ROP_CODE = ROP_CODE(12255782u32);
-                pub const PATCOPY: ROP_CODE = ROP_CODE(15728673u32);
-                pub const PATPAINT: ROP_CODE = ROP_CODE(16452105u32);
-                pub const PATINVERT: ROP_CODE = ROP_CODE(5898313u32);
-                pub const DSTINVERT: ROP_CODE = ROP_CODE(5570569u32);
-                pub const BLACKNESS: ROP_CODE = ROP_CODE(66u32);
-                pub const WHITENESS: ROP_CODE = ROP_CODE(16711778u32);
-                pub const NOMIRRORBITMAP: ROP_CODE = ROP_CODE(2147483648u32);
-                pub const CAPTUREBLT: ROP_CODE = ROP_CODE(1073741824u32);
-                impl ::std::convert::From<u32> for ROP_CODE {
-                    fn from(value: u32) -> Self {
-                        Self(value)
-                    }
-                }
-                unsafe impl ::windows::Abi for ROP_CODE {
-                    type Abi = Self;
-                    type DefaultType = Self;
-                }
-                impl ::std::ops::BitOr for ROP_CODE {
-                    type Output = Self;
-                    fn bitor(self, rhs: Self) -> Self {
-                        Self(self.0 | rhs.0)
-                    }
-                }
-                impl ::std::ops::BitAnd for ROP_CODE {
-                    type Output = Self;
-                    fn bitand(self, rhs: Self) -> Self {
-                        Self(self.0 & rhs.0)
-                    }
-                }
-                impl ::std::ops::BitOrAssign for ROP_CODE {
-                    fn bitor_assign(&mut self, rhs: Self) {
-                        self.0.bitor_assign(rhs.0)
-                    }
-                }
-                impl ::std::ops::BitAndAssign for ROP_CODE {
-                    fn bitand_assign(&mut self, rhs: Self) {
-                        self.0.bitand_assign(rhs.0)
-                    }
-                }
-                impl ::std::ops::Not for ROP_CODE {
-                    type Output = Self;
-                    fn not(self) -> Self {
-                        Self(self.0.not())
-                    }
-                }
                 pub unsafe fn ReleaseDC<'a>(
                     hwnd: impl ::windows::IntoParam<'a, super::super::Foundation::HWND>,
                     hdc: impl ::windows::IntoParam<'a, HDC>,
                 ) -> i32 {
                     #[cfg(windows)]
-                        {
-                            #[link(name = "user32")]
-                            extern "system" {
-                                fn ReleaseDC(hwnd: super::super::Foundation::HWND, hdc: HDC) -> i32;
-                            }
-                            ::std::mem::transmute(ReleaseDC(
-                                hwnd.into_param().abi(),
-                                hdc.into_param().abi(),
-                            ))
+                    {
+                        #[link(name = "user32")]
+                        extern "system" {
+                            fn ReleaseDC(hwnd: super::super::Foundation::HWND, hdc: HDC) -> i32;
                         }
-                    #[cfg(not(windows))]
-                    unimplemented!("Unsupported target OS");
-                }
-                pub unsafe fn SelectObject<'a>(
-                    hdc: impl ::windows::IntoParam<'a, HDC>,
-                    h: impl ::windows::IntoParam<'a, HGDIOBJ>,
-                ) -> HGDIOBJ {
-                    #[cfg(windows)]
-                        {
-                            #[link(name = "gdi32")]
-                            extern "system" {
-                                fn SelectObject(hdc: HDC, h: HGDIOBJ) -> HGDIOBJ;
-                            }
-                            ::std::mem::transmute(SelectObject(
-                                hdc.into_param().abi(),
-                                h.into_param().abi(),
-                            ))
-                        }
+                        ::std::mem::transmute(ReleaseDC(
+                            hwnd.into_param().abi(),
+                            hdc.into_param().abi(),
+                        ))
+                    }
                     #[cfg(not(windows))]
                     unimplemented!("Unsupported target OS");
                 }
             }
         }
         #[allow(
-        unused_variables,
-        non_upper_case_globals,
-        non_snake_case,
-        unused_unsafe,
-        non_camel_case_types,
-        dead_code,
-        clippy::all
-        )]
-        pub mod System {
-            #[allow(
             unused_variables,
             non_upper_case_globals,
             non_snake_case,
@@ -680,9 +624,9 @@ pub mod Windows {
             non_camel_case_types,
             dead_code,
             clippy::all
-            )]
-            pub mod Diagnostics {
-                #[allow(
+        )]
+        pub mod System {
+            #[allow(
                 unused_variables,
                 non_upper_case_globals,
                 non_snake_case,
@@ -690,27 +634,58 @@ pub mod Windows {
                 non_camel_case_types,
                 dead_code,
                 clippy::all
+            )]
+            pub mod Diagnostics {
+                #[allow(
+                    unused_variables,
+                    non_upper_case_globals,
+                    non_snake_case,
+                    unused_unsafe,
+                    non_camel_case_types,
+                    dead_code,
+                    clippy::all
                 )]
                 pub mod Debug {
+                    pub unsafe fn Beep(
+                        dwfreq: u32,
+                        dwduration: u32,
+                    ) -> super::super::super::Foundation::BOOL {
+                        #[cfg(windows)]
+                        {
+                            #[link(name = "kernel32")]
+                            extern "system" {
+                                fn Beep(
+                                    dwfreq: u32,
+                                    dwduration: u32,
+                                ) -> super::super::super::Foundation::BOOL;
+                            }
+                            ::std::mem::transmute(Beep(
+                                ::std::mem::transmute(dwfreq),
+                                ::std::mem::transmute(dwduration),
+                            ))
+                        }
+                        #[cfg(not(windows))]
+                        unimplemented!("Unsupported target OS");
+                    }
                     pub unsafe fn GetLastError() -> WIN32_ERROR {
                         #[cfg(windows)]
-                            {
-                                #[link(name = "kernel32")]
-                                extern "system" {
-                                    fn GetLastError() -> WIN32_ERROR;
-                                }
-                                ::std::mem::transmute(GetLastError())
+                        {
+                            #[link(name = "kernel32")]
+                            extern "system" {
+                                fn GetLastError() -> WIN32_ERROR;
                             }
+                            ::std::mem::transmute(GetLastError())
+                        }
                         #[cfg(not(windows))]
                         unimplemented!("Unsupported target OS");
                     }
                     #[derive(
-                    :: std :: cmp :: PartialEq,
-                    :: std :: cmp :: Eq,
-                    :: std :: marker :: Copy,
-                    :: std :: clone :: Clone,
-                    :: std :: default :: Default,
-                    :: std :: fmt :: Debug,
+                        :: std :: cmp :: PartialEq,
+                        :: std :: cmp :: Eq,
+                        :: std :: marker :: Copy,
+                        :: std :: clone :: Clone,
+                        :: std :: default :: Default,
+                        :: std :: fmt :: Debug,
                     )]
                     #[repr(transparent)]
                     pub struct WIN32_ERROR(pub u32);
@@ -764,16 +739,6 @@ pub mod Windows {
             }
         }
         #[allow(
-        unused_variables,
-        non_upper_case_globals,
-        non_snake_case,
-        unused_unsafe,
-        non_camel_case_types,
-        dead_code,
-        clippy::all
-        )]
-        pub mod UI {
-            #[allow(
             unused_variables,
             non_upper_case_globals,
             non_snake_case,
@@ -781,6 +746,67 @@ pub mod Windows {
             non_camel_case_types,
             dead_code,
             clippy::all
+        )]
+        pub mod UI {
+            #[allow(
+                unused_variables,
+                non_upper_case_globals,
+                non_snake_case,
+                unused_unsafe,
+                non_camel_case_types,
+                dead_code,
+                clippy::all
+            )]
+            pub mod HiDpi {
+                #[derive(
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
+                )]
+                #[repr(transparent)]
+                pub struct PROCESS_DPI_AWARENESS(pub i32);
+                pub const PROCESS_DPI_UNAWARE: PROCESS_DPI_AWARENESS = PROCESS_DPI_AWARENESS(0i32);
+                pub const PROCESS_SYSTEM_DPI_AWARE: PROCESS_DPI_AWARENESS =
+                    PROCESS_DPI_AWARENESS(1i32);
+                pub const PROCESS_PER_MONITOR_DPI_AWARE: PROCESS_DPI_AWARENESS =
+                    PROCESS_DPI_AWARENESS(2i32);
+                impl ::std::convert::From<i32> for PROCESS_DPI_AWARENESS {
+                    fn from(value: i32) -> Self {
+                        Self(value)
+                    }
+                }
+                unsafe impl ::windows::Abi for PROCESS_DPI_AWARENESS {
+                    type Abi = Self;
+                    type DefaultType = Self;
+                }
+                pub unsafe fn SetProcessDpiAwareness(
+                    value: PROCESS_DPI_AWARENESS,
+                ) -> ::windows::Result<()> {
+                    #[cfg(windows)]
+                    {
+                        #[link(name = "onecoreuap")]
+                        extern "system" {
+                            fn SetProcessDpiAwareness(
+                                value: PROCESS_DPI_AWARENESS,
+                            ) -> ::windows::HRESULT;
+                        }
+                        SetProcessDpiAwareness(::std::mem::transmute(value)).ok()
+                    }
+                    #[cfg(not(windows))]
+                    unimplemented!("Unsupported target OS");
+                }
+            }
+            #[allow(
+                unused_variables,
+                non_upper_case_globals,
+                non_snake_case,
+                unused_unsafe,
+                non_camel_case_types,
+                dead_code,
+                clippy::all
             )]
             pub mod KeyboardAndMouseInput {
                 #[derive(:: std :: clone :: Clone, :: std :: marker :: Copy)]
@@ -863,12 +889,12 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
                 )]
                 #[repr(transparent)]
                 pub struct INPUT_TYPE(pub u32);
@@ -953,12 +979,12 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
                 )]
                 #[repr(transparent)]
                 pub struct KEYBD_EVENT_FLAGS(pub u32);
@@ -1047,12 +1073,12 @@ pub mod Windows {
                     type DefaultType = Self;
                 }
                 #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
                 )]
                 #[repr(transparent)]
                 pub struct MOUSE_EVENT_FLAGS(pub u32);
@@ -1110,27 +1136,27 @@ pub mod Windows {
                 }
                 pub unsafe fn SendInput(cinputs: u32, pinputs: *const INPUT, cbsize: i32) -> u32 {
                     #[cfg(windows)]
-                        {
-                            #[link(name = "user32")]
-                            extern "system" {
-                                fn SendInput(cinputs: u32, pinputs: *const INPUT, cbsize: i32) -> u32;
-                            }
-                            ::std::mem::transmute(SendInput(
-                                ::std::mem::transmute(cinputs),
-                                ::std::mem::transmute(pinputs),
-                                ::std::mem::transmute(cbsize),
-                            ))
+                    {
+                        #[link(name = "user32")]
+                        extern "system" {
+                            fn SendInput(cinputs: u32, pinputs: *const INPUT, cbsize: i32) -> u32;
                         }
+                        ::std::mem::transmute(SendInput(
+                            ::std::mem::transmute(cinputs),
+                            ::std::mem::transmute(pinputs),
+                            ::std::mem::transmute(cbsize),
+                        ))
+                    }
                     #[cfg(not(windows))]
                     unimplemented!("Unsupported target OS");
                 }
                 #[derive(
-                :: std :: cmp :: PartialEq,
-                :: std :: cmp :: Eq,
-                :: std :: marker :: Copy,
-                :: std :: clone :: Clone,
-                :: std :: default :: Default,
-                :: std :: fmt :: Debug,
+                    :: std :: cmp :: PartialEq,
+                    :: std :: cmp :: Eq,
+                    :: std :: marker :: Copy,
+                    :: std :: clone :: Clone,
+                    :: std :: default :: Default,
+                    :: std :: fmt :: Debug,
                 )]
                 #[repr(transparent)]
                 pub struct VIRTUAL_KEY(pub u16);
@@ -1142,6 +1168,59 @@ pub mod Windows {
                 unsafe impl ::windows::Abi for VIRTUAL_KEY {
                     type Abi = Self;
                     type DefaultType = Self;
+                }
+            }
+            #[allow(
+                unused_variables,
+                non_upper_case_globals,
+                non_snake_case,
+                unused_unsafe,
+                non_camel_case_types,
+                dead_code,
+                clippy::all
+            )]
+            pub mod WindowsAndMessaging {
+                pub unsafe fn FindWindowW<'a>(
+                    lpclassname: impl ::windows::IntoParam<'a, super::super::Foundation::PWSTR>,
+                    lpwindowname: impl ::windows::IntoParam<'a, super::super::Foundation::PWSTR>,
+                ) -> super::super::Foundation::HWND {
+                    #[cfg(windows)]
+                    {
+                        #[link(name = "user32")]
+                        extern "system" {
+                            fn FindWindowW(
+                                lpclassname: super::super::Foundation::PWSTR,
+                                lpwindowname: super::super::Foundation::PWSTR,
+                            ) -> super::super::Foundation::HWND;
+                        }
+                        ::std::mem::transmute(FindWindowW(
+                            lpclassname.into_param().abi(),
+                            lpwindowname.into_param().abi(),
+                        ))
+                    }
+                    #[cfg(not(windows))]
+                    unimplemented!("Unsupported target OS");
+                }
+                pub unsafe fn GetClientRect<'a>(
+                    hwnd: impl ::windows::IntoParam<'a, super::super::Foundation::HWND>,
+                    lprect: *mut super::super::Foundation::RECT,
+                ) -> super::super::Foundation::BOOL {
+                    #[cfg(windows)]
+                    {
+                        #[link(name = "user32")]
+                        extern "system" {
+                            fn GetClientRect(
+                                hwnd: super::super::Foundation::HWND,
+                                lprect: *mut super::super::Foundation::RECT,
+                            ) -> super::super::Foundation::BOOL;
+                        }
+                        ::std::mem::transmute(GetClientRect(
+                            hwnd.into_param().abi(),
+                            ::std::mem::transmute(lprect),
+                        ))
+                    }
+                    #[cfg(not(windows))]
+                    unimplemented!("Unsupported target OS");
                 }
             }
         }
