@@ -17,3 +17,16 @@
 有力度条时，控制力度，在区间左侧 1/3 处徘徊。没有找到力度条时，会查找收杆图标，如果发现收杆图标，就点击左键收杆。
 
 使用 SendInput 模拟鼠标点击
+
+## 构建
+
+```batch
+cd bindings
+cargo build
+cp .\target\debug\bindings-eeb6656161a2ef74\out\windows.rs .\src\lib.rs
+cd ..
+
+cargo build --release
+
+mt.exe -nologo -manifest "D:\Rust\genshin-auto-fish\genshin-auto-fish.exe.manifest" -outputresource:"D:\Rust\genshin-auto-fish\target\release\genshin-auto-fish.exe;#1"
+```
