@@ -7,8 +7,8 @@ pub fn find_indicator(capture: &WindowCapture) -> Option<(usize, usize)> {
     let width = capture.get_width();
     let height = capture.get_height();
     let indicator_half_height = (0.01 * (height as f32)) as usize;
-    for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
-        for y in indicator_half_height..=((0.33 * (height as f32)) as usize) {
+    for y in indicator_half_height..=((0.33 * (height as f32)) as usize) {
+        for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
             let mut found = true;
             unsafe {
                 if capture.get_color_unchecked(x as usize, y) != LIGHT_YELLOW {
@@ -38,8 +38,8 @@ pub fn find_left_arrow(capture: &WindowCapture, indicator_y: usize) -> Option<(u
     let width = capture.get_width();
     let height = capture.get_height();
     let arrow_half_height = (0.007 * (height as f32)) as usize;
-    for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
-        for y in (indicator_y - arrow_half_height)..=(indicator_y + arrow_half_height) {
+    for y in (indicator_y - arrow_half_height)..=(indicator_y + arrow_half_height) {
+        for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
             let mut found = true;
             unsafe {
                 if capture.get_color_unchecked(x as usize, y) != LIGHT_YELLOW {
@@ -69,8 +69,8 @@ pub fn find_right_arrow(capture: &WindowCapture, indicator_y: usize) -> Option<(
     let width = capture.get_width();
     let height = capture.get_height();
     let arrow_half_height = (0.007 * (height as f32)) as usize;
-    for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
-        for y in (indicator_y - arrow_half_height)..=(indicator_y + arrow_half_height) {
+    for y in (indicator_y - arrow_half_height)..=(indicator_y + arrow_half_height) {
+        for x in ((0.35 * (width as f32)) as usize)..=((0.64 * (width as f32)) as usize) {
             let mut found = true;
             unsafe {
                 if capture.get_color_unchecked(x as usize, y) != LIGHT_YELLOW {
