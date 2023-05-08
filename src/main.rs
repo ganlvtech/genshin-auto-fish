@@ -1,8 +1,8 @@
 use std::thread::sleep;
 use std::time::Duration;
 
-use genshin_auto_fish::genshin::{find_fish_button, find_indicator, find_left_arrow, find_right_arrow};
-use genshin_auto_fish::windows::{beep, set_dpi_aware, set_mouse_state, WindowCapture};
+use genshin_auto_pickup::genshin::{find_fish_button, find_indicator, find_left_arrow, find_right_arrow};
+use genshin_auto_pickup::windows::{beep, set_dpi_aware, set_mouse_state, WindowCapture};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 enum FishingState {
