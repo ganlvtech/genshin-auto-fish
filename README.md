@@ -1,6 +1,6 @@
-# 原神半自动钓鱼
+# 原神自动拾取
 
-需要手动更换鱼饵和选择位置抛竿，鱼上钩时，程序会自动收杆和调整力度。
+该项目起源于[ganlvtech/genshin-auto-fish](https://github.com/ganlvtech/genshin-auto-fish)
 
 目前代码里写死的图形匹配逻辑，仅支持 1920x1080 全屏。
 
@@ -20,13 +20,22 @@
 
 ## 构建
 
-```batch
+1. 生成bindings库
+```
 cd bindings
 cargo build
+```
+
+2. 复制bindings库到bindings目录下的src
+```
 cp .\target\debug\bindings-eeb6656161a2ef74\out\windows.rs .\src\lib.rs
-cd ..
-
+```
+3. 编译项目
+```
 cargo build --release
+```
 
-mt.exe -nologo -manifest "D:\Rust\genshin-auto-fish\genshin-auto-fish.exe.manifest" -outputresource:"D:\Rust\genshin-auto-fish\target\release\genshin-auto-fish.exe;#1"
+4. 提升权限
+```
+mt.exe -nologo -manifest genshin-auto-fish.exe.manifest -outputresource:"D:\Rust\genshin-auto-fish\target\release\genshin-auto-fish.exe;#1"
 ```
